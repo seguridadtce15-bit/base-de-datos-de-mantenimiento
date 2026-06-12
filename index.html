@@ -142,7 +142,7 @@
     <div class="header-date" id="current-date-display">--/--/----</div>
 </header>
 
-<!-- MENÚ SOLICITADO -->
+<!-- MENÚ -->
 <nav class="nav-menu">
     <div class="nav-btn active" onclick="switchSection('sec-registro', this)">
         <span>📝</span>Registrar Pendientes
@@ -167,7 +167,7 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="fecha_inicio">Fecha de Reporte</label>
-                            <input type="date" id="fecha_inicio" required readonly>
+                            <input type="date" id="fecha_inicio" required>
                         </div>
                         <div class="form-group">
                             <label for="localizacion">Área / Ubicación *</label>
@@ -251,7 +251,6 @@
 
     <!-- ================= PANTALLA 2: VER LISTA DE PENDIENTES ================= -->
     <section id="sec-pendientes" class="app-section">
-        <!-- CONTADORES Y KPIs DE TRABAJO -->
         <div class="kpi-container">
             <div class="kpi-card kpi-backlog"><div class="kpi-title">Pendientes Activos</div><div class="kpi-value" id="kpi-pending">0</div></div>
             <div class="kpi-card kpi-critico"><div class="kpi-title">Urgencias (Prioridad Alta)</div><div class="kpi-value" id="kpi-urgent" style="color: var(--prio-alta)">0</div></div>
@@ -259,7 +258,7 @@
             <div class="kpi-card kpi-tasa"><div class="kpi-title">Eficiencia de Cierre</div><div class="kpi-value" id="kpi-rate" style="color: #34d399">0%</div></div>
         </div>
 
-        <!-- FILTROS DE BÚSQUEDA -->
+        <!-- FILTROS -->
         <div class="card">
             <div class="table-filters">
                 <div class="filter-group">
@@ -291,7 +290,7 @@
                 </div>
             </div>
 
-            <!-- VISTA COMPUTADORA (TABLA) -->
+            <!-- TABLA PC -->
             <div class="table-container">
                 <table id="tasks-table">
                     <thead>
@@ -311,7 +310,7 @@
                 </table>
             </div>
 
-            <!-- VISTA CELULAR (TARJETAS) -->
+            <!-- TARJETAS MOVIL -->
             <div id="mobile-list-container" class="mobile-list"></div>
         </div>
     </section>
@@ -319,7 +318,10 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCduGJbuNas0XsI1S-mzMCj4E8zVebL7DqJDyofb7sLnZEQikGZfMQdrjBYUJzynLOrg/exec"; // Pega aquí tu enlace web generado por Google Apps Script
+    // ==========================================
+    // PON TU ENLACE DE GOOGLE APPS SCRIPT AQUÍ:
+    // ==========================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSLNt1JRrjt5ov-3FLSJOnUpfj3ZUsIjZGZVGvNCyIiI8qypu7Bz-4ymbV_Xb17tjnBA/exec"; 
 
     let tasks = JSON.parse(localStorage.getItem('plant_deficiencies_v8')) || [];
     const form = document.getElementById('deficiency-form');
@@ -336,7 +338,6 @@
         element.classList.add('active');
     }
 
-    // Lógica para sincronizar Estado y Porcentaje automáticamente
     function ajustarProgresoPorEstado() {
         const estado = document.getElementById('status').value;
         const selectAvance = document.getElementById('avance');
@@ -346,7 +347,7 @@
         } else if (estado === "Concluido") {
             selectAvance.value = "100";
         } else if (estado === "En Proceso" && selectAvance.value === "0") {
-            selectAvance.value = "20"; // Sugerencia inicial de avance al iniciar tareas
+            selectAvance.value = "20"; 
         }
     }
 
@@ -409,7 +410,6 @@
         const selPrio = document.getElementById('filter-prioridad').value;
         const sOt = document.getElementById('search-ot').value.toLowerCase();
 
-        // Operaciones de contadores
         const total = tasks.length;
         const backlog = tasks.filter(t => t.status !== 'Concluido').length;
         const criticas = tasks.filter(t => t.prioridad === 'Alta' && t.status !== 'Concluido').length;
@@ -435,7 +435,7 @@
             const pPct = task.avance || '0';
             const isDone = task.status === 'Concluido' ? 'done' : '';
 
-            // Fila de datos para PC
+            // Tabla PC
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong style="font-family:monospace; color:#60a5fa;">#${itemNum}</strong></td>
@@ -460,7 +460,7 @@
             `;
             tBody.appendChild(tr);
 
-            // Tarjeta para Celular
+            // Vista Celular
             const mCard = document.createElement('div');
             mCard.className = 'mobile-card';
             mCard.innerHTML = `
@@ -503,10 +503,15 @@
         return `${parts[2]}/${parts[1]}/${parts[0].slice(-2)}`;
     }
 
+    // --- FUNCIÓN CORREGIDA PARA PREVENIR BORRADO DE FECHA ---
     window.editTask = function(index) {
         const task = tasks[index];
         document.getElementById('edit-index').value = index;
-        document.getElementById('fecha_inicio').value = task.fecha_inicio;
+        
+        if (task.fecha_inicio && task.fecha_inicio !== '-') {
+            document.getElementById('fecha_inicio').value = task.fecha_inicio;
+        }
+        
         document.getElementById('localizacion').value = task.localizacion;
         document.getElementById('descripcion').value = task.descripcion;
         document.getElementById('tipo_actividad').value = task.tipo_actividad;
