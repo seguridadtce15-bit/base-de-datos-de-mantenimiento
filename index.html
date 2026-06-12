@@ -114,6 +114,12 @@
         .prio-media { background: var(--prio-media); color: #1e1b4b; }
         .prio-baja { background: #334155; }
 
+        /* Barra de Progreso */
+        .progress-bar-container { background: #1e293b; border-radius: 10px; overflow: hidden; width: 100%; max-width: 120px; height: 8px; border: 1px solid #334155; margin-top: 4px; }
+        .progress-bar-fill { height: 100%; background: var(--primary); border-radius: 10px; width: 0%; transition: width 0.3s ease; }
+        .progress-bar-fill.done { background: var(--status-concluido); }
+        .progress-text { font-size: 0.82em; font-weight: 700; color: #e2e8f0; display: inline-block; margin-top: 2px; }
+
         .action-btn { background: #1e293b; border: 1px solid var(--border-color); color: white; cursor: pointer; font-size: 0.9em; padding: 6px 12px; border-radius: 4px; }
         .action-btn:hover { background: var(--border-color); }
 
@@ -124,6 +130,7 @@
 
 <div id="loading-overlay">⚙️ Datos Sincronizados En Línea</div>
 
+<!-- HEADER GENERAL -->
 <header>
     <div class="logo-section">
         <span style="font-size: 1.6em; color: var(--primary);">🏭</span>
@@ -135,6 +142,7 @@
     <div class="header-date" id="current-date-display">--/--/----</div>
 </header>
 
+<!-- MENÚ SOLICITADO -->
 <nav class="nav-menu">
     <div class="nav-btn active" onclick="switchSection('sec-registro', this)">
         <span>📝</span>Registrar Pendientes
@@ -146,6 +154,7 @@
 
 <div class="container">
 
+    <!-- ================= PANTALLA 1: REGISTRAR PENDIENTES ================= -->
     <section id="sec-registro" class="app-section active">
         <div class="card">
             <div class="card-header">
@@ -161,7 +170,7 @@
                             <input type="date" id="fecha_inicio" required readonly>
                         </div>
                         <div class="form-group">
-                            <label for="localizacion">Área / Ubicación * (Campo Abierto)</label>
+                            <label for="localizacion">Área / Ubicación *</label>
                             <input type="text" id="localizacion" placeholder="Escribe el nombre del área o equipo..." required style="text-transform: uppercase;">
                         </div>
                         <div class="form-group full-width">
@@ -188,11 +197,27 @@
                         </div>
                         <div class="form-group">
                             <label for="status">Estado Actual</label>
-                            <select id="status">
+                            <select id="status" onchange="ajustarProgresoPorEstado()">
                                 <option value="Pendiente">Pendiente (Por revisar)</option>
                                 <option value="Programado">Programado</option>
                                 <option value="En Proceso">En Ejecución (En Campo)</option>
                                 <option value="Concluido">Concluido / Cerrado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="avance">Porcentaje de Avance</label>
+                            <select id="avance">
+                                <option value="0" selected>0%</option>
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                                <option value="30">30%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                                <option value="80">80%</option>
+                                <option value="90">90%</option>
+                                <option value="100">100%</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -224,7 +249,9 @@
         </div>
     </section>
 
+    <!-- ================= PANTALLA 2: VER LISTA DE PENDIENTES ================= -->
     <section id="sec-pendientes" class="app-section">
+        <!-- CONTADORES Y KPIs DE TRABAJO -->
         <div class="kpi-container">
             <div class="kpi-card kpi-backlog"><div class="kpi-title">Pendientes Activos</div><div class="kpi-value" id="kpi-pending">0</div></div>
             <div class="kpi-card kpi-critico"><div class="kpi-title">Urgencias (Prioridad Alta)</div><div class="kpi-value" id="kpi-urgent" style="color: var(--prio-alta)">0</div></div>
@@ -232,6 +259,7 @@
             <div class="kpi-card kpi-tasa"><div class="kpi-title">Eficiencia de Cierre</div><div class="kpi-value" id="kpi-rate" style="color: #34d399">0%</div></div>
         </div>
 
+        <!-- FILTROS DE BÚSQUEDA -->
         <div class="card">
             <div class="table-filters">
                 <div class="filter-group">
@@ -263,12 +291,13 @@
                 </div>
             </div>
 
+            <!-- VISTA COMPUTADORA (TABLA) -->
             <div class="table-container">
                 <table id="tasks-table">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>ESTADO</th>
+                            <th>ESTADO / AVANCE</th>
                             <th>PRIORIDAD</th>
                             <th>ÁREA / UBICACIÓN</th>
                             <th>DESCRIPCIÓN DEL PENDIENTE</th>
@@ -282,6 +311,7 @@
                 </table>
             </div>
 
+            <!-- VISTA CELULAR (TARJETAS) -->
             <div id="mobile-list-container" class="mobile-list"></div>
         </div>
     </section>
@@ -289,9 +319,9 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznSpUy1cWE8hsXRWJRebNAmiA2NoDkhs9dqw33Iiz-d3apqUyHvGBJeonrio0zx_tI8A/exec"; // Pega aquí tu enlace web generado por Google Apps Script
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwu9yBtawF3EHuxmxs9kg50qFnqPvLF4Ndo3uXYp0rgRQ_P-o_jULSgOHKZ7PSyfug8yQ/exec"; // Pega aquí tu enlace web generado por Google Apps Script
 
-    let tasks = JSON.parse(localStorage.getItem('plant_deficiencies_v7')) || [];
+    let tasks = JSON.parse(localStorage.getItem('plant_deficiencies_v8')) || [];
     const form = document.getElementById('deficiency-form');
     
     const hoy = new Date();
@@ -306,6 +336,20 @@
         element.classList.add('active');
     }
 
+    // Lógica para sincronizar Estado y Porcentaje automáticamente
+    function ajustarProgresoPorEstado() {
+        const estado = document.getElementById('status').value;
+        const selectAvance = document.getElementById('avance');
+        
+        if (estado === "Pendiente") {
+            selectAvance.value = "0";
+        } else if (estado === "Concluido") {
+            selectAvance.value = "100";
+        } else if (estado === "En Proceso" && selectAvance.value === "0") {
+            selectAvance.value = "20"; // Sugerencia inicial de avance al iniciar tareas
+        }
+    }
+
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         mostrarCarga(true);
@@ -318,6 +362,7 @@
             tipo_actividad: document.getElementById('tipo_actividad').value,
             prioridad: document.getElementById('prioridad').value,
             status: document.getElementById('status').value,
+            avance: document.getElementById('avance').value || '0',
             ot: document.getElementById('ot').value || '-',
             fecha_prog: document.getElementById('fecha_prog').value || '-',
             fecha_term: document.getElementById('fecha_term').value || '-',
@@ -334,7 +379,7 @@
         }
 
         resetFormulario();
-        localStorage.setItem('plant_deficiencies_v7', JSON.stringify(tasks));
+        localStorage.setItem('plant_deficiencies_v8', JSON.stringify(tasks));
         renderVistas();
         
         setTimeout(() => {
@@ -387,12 +432,20 @@
             const itemNum = 1001 + index;
             const statusClass = `badge status-${task.status.toLowerCase().replace(" ", "-")}`;
             const prioClass = `badge prio-${task.prioridad.toLowerCase()}`;
+            const pPct = task.avance || '0';
+            const isDone = task.status === 'Concluido' ? 'done' : '';
 
             // Fila de datos para PC
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong style="font-family:monospace; color:#60a5fa;">#${itemNum}</strong></td>
-                <td><span class="${statusClass}">${task.status}</span></td>
+                <td>
+                    <span class="${statusClass}">${task.status}</span><br>
+                    <span class="progress-text">${pPct}%</span>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill ${isDone}" style="width: ${pPct}%"></div>
+                    </div>
+                </td>
                 <td><span class="${prioClass}">${task.prioridad}</span></td>
                 <td style="font-weight:700; color:#cbd5e1; text-transform:uppercase;">${task.localizacion}</td>
                 <td style="max-width:320px; font-size:0.93em; color:#94a3b8;">${task.descripcion}</td>
@@ -422,6 +475,15 @@
                     </div>
                 </div>
                 <div class="m-card-desc">${task.descripcion}</div>
+                <div style="margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.8em; color:var(--text-muted); margin-bottom:2px;">
+                        <span>Avance de la tarea:</span>
+                        <strong>${pPct}%</strong>
+                    </div>
+                    <div class="progress-bar-container" style="max-width:100%;">
+                        <div class="progress-bar-fill ${isDone}" style="width: ${pPct}%"></div>
+                    </div>
+                </div>
                 <div style="font-size:0.8em; margin-bottom:10px; color:#94a3b8;">
                     <strong>Resp:</strong> ${task.responsable} | <strong>O.T:</strong> ${task.ot}
                 </div>
@@ -450,6 +512,7 @@
         document.getElementById('tipo_actividad').value = task.tipo_actividad;
         document.getElementById('prioridad').value = task.prioridad;
         document.getElementById('status').value = task.status;
+        document.getElementById('avance').value = task.avance || '0';
         document.getElementById('ot').value = task.ot === '-' ? '' : task.ot;
         document.getElementById('fecha_prog').value = task.fecha_prog === '-' ? '' : task.fecha_prog;
         document.getElementById('fecha_term').value = task.fecha_term === '-' ? '' : task.fecha_term;
@@ -476,7 +539,7 @@
             .then(res => res.json())
             .then(data => {
                 tasks = data;
-                localStorage.setItem('plant_deficiencies_v7', JSON.stringify(tasks));
+                localStorage.setItem('plant_deficiencies_v8', JSON.stringify(tasks));
                 renderVistas();
                 mostrarCarga(false);
             }).catch(() => mostrarCarga(false));
