@@ -3,137 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terminales de Cargas Especializadas - DMS</title>
+    <title>TCE - Reliability & Maintenance Management System</title>
     <style>
         :root {
-            --bg-body: #0f172a; 
-            --bg-card: #ffffff; 
-            --bg-input: #f8fafc; 
-            --text-dark: #1e293b; 
-            --text-muted: #64748b; 
-            --primary: #1e3a8a; 
-            --accent: #3b82f6; 
+            --bg-body: #0b0f19; 
+            --bg-card: #131c2e; 
+            --bg-input: #1e293b; 
+            --border-color: #334155;
+            --text-light: #f8fafc; 
+            --text-muted: #94a3b8; 
+            --primary-industrial: #3b82f6; 
             
-            /* Badges */
-            --status-proceso: #3b82f6; 
-            --status-prog: #8b5cf6; 
-            --status-concluido: #10b981; 
-            --prio-alta: #ef4444; 
-            --prio-media: #f59e0b; 
-            --prio-baja: #64748b; 
+            /* Niveles de Criticidad / Status RCM */
+            --prio-critica: #ef4444; 
+            --prio-importante: #f59e0b; 
+            --prio-rutinaria: #10b981; 
+            --status-ejecucion: #06b6d4;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-dark); padding-bottom: 30px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-light); padding-bottom: 40px; }
 
-        /* --- HEADER CON NOMBRE DE LA EMPRESA --- */
-        header { background: #1e293b; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .logo-section { display: flex; align-items: center; gap: 12px; }
-        .logo-text h1 { font-size: 1.1em; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; }
-        .logo-text p { font-size: 0.75em; opacity: 0.7; color: #94a3b8; font-weight: 600; }
-        .header-date { font-size: 0.8em; color: #cbd5e1; background: rgba(255,255,255,0.08); padding: 6px 12px; border-radius: 4px; display: none; }
+        /* --- HEADER CORPORATIVO INDUSTRIAL --- */
+        header { background: #111827; color: white; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary-industrial); }
+        .logo-section { display: flex; align-items: center; gap: 14px; }
+        .logo-text h1 { font-size: 1.15em; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); }
+        .logo-text p { font-size: 0.75em; color: var(--primary-industrial); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+        .header-date { font-size: 0.8em; color: var(--text-muted); background: #1e293b; padding: 6px 12px; border-radius: 4px; font-weight: 600; display: none; }
         @media (min-width: 768px) { .header-date { display: block; } }
 
-        /* --- MENÚ DE NAVEGACIÓN SOLICITADO --- */
-        .nav-menu { display: flex; background: #1e293b; border-bottom: 2px solid #334155; position: sticky; top: 0; z-index: 100; }
-        .nav-btn { flex: 1; text-align: center; padding: 15px 10px; color: #94a3b8; font-weight: 700; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.3s; border-bottom: 3px solid transparent; }
-        .nav-btn.active { color: #fff; border-bottom-color: var(--accent); background: rgba(255,255,255,0.02); }
-        .nav-btn span { display: block; font-size: 1.2em; margin-bottom: 2px; }
+        /* --- MENÚ DE NAVEGACIÓN --- */
+        .nav-menu { display: flex; background: #111827; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
+        .nav-btn { flex: 1; text-align: center; padding: 16px 10px; color: var(--text-muted); font-weight: 700; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.8px; cursor: pointer; transition: all 0.2s; border-bottom: 3px solid transparent; }
+        .nav-btn.active { color: var(--text-light); border-bottom-color: var(--primary-industrial); background: rgba(59, 130, 246, 0.05); }
+        .nav-btn span { display: inline-block; margin-right: 6px; }
 
-        /* --- CONTENEDORES DE PANTALLA --- */
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        /* --- CONTENEDORES --- */
+        .container { max-width: 1280px; margin: 20px auto; padding: 0 15px; }
         .app-section { display: none; }
-        .app-section.active { display: block; animation: fadeIn 0.3s ease; }
+        .app-section.active { display: block; animation: fadeIn 0.25s ease-out; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- KPIs OPERATIVOS --- */
-        .kpi-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-        @media (min-width: 768px) { .kpi-container { grid-template-columns: repeat(4, 1fr); gap: 15px; } }
-        .kpi-card { background: #1e293b; color: white; padding: 15px; border-radius: 8px; text-align: center; }
-        .kpi-title { font-size: 0.7em; text-transform: uppercase; color: #94a3b8; margin-bottom: 5px; font-weight: 600; }
-        .kpi-value { font-size: 1.5em; font-weight: 700; }
-        .kpi-value.urgent { color: var(--prio-alta); }
+        /* --- DASHBOARD KPIs (INDICADORES DE CONFIABILIDAD) --- */
+        .kpi-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; }
+        @media (min-width: 768px) { .kpi-container { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
+        .kpi-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 18px 15px; border-radius: 6px; position: relative; overflow: hidden; }
+        .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--border-color); }
+        .kpi-card.kpi-backlog::before { background: var(--status-ejecucion); }
+        .kpi-card.kpi-critico::before { background: var(--prio-critica); }
+        .kpi-card.kpi-proactivo::before { background: var(--primary-industrial); }
+        .kpi-card.kpi-tasa::before { background: var(--prio-rutinaria); }
+        .kpi-title { font-size: 0.72em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; letter-spacing: 0.5px; }
+        .kpi-value { font-size: 1.6em; font-weight: 800; color: var(--text-light); }
 
-        /* --- TARJETAS Y FORMULARIOS --- */
-        .card { background: var(--bg-card); border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 20px; }
-        .card-header { background: #f8fafc; padding: 15px 20px; border-bottom: 1px solid #e2e8f0; }
-        .card-title { font-size: 0.9em; font-weight: 700; color: var(--primary); text-transform: uppercase; }
-        .card-body { padding: 20px; }
+        /* --- COMPONENTES DE FORMULARIO E INDUSTRIALES --- */
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; margin-bottom: 25px; }
+        .card-header { background: #162238; padding: 15px 20px; border-bottom: 1px solid var(--border-color); }
+        .card-title { font-size: 0.85em; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-body { padding: 22px; }
 
-        /* Formulario Responsivo */
-        .form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
         @media (min-width: 768px) { .form-grid { grid-template-columns: 1fr 1fr; } .full-width { grid-column: span 2; } }
 
         .form-group { display: flex; flex-direction: column; }
-        label { font-size: 0.75em; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
-        input, select, textarea { padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: var(--bg-input); font-size: 0.9em; color: var(--text-dark); appearance: none; -webkit-appearance: none; }
-        select { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M0 3l5 5 5-5z' fill='%2364748b'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 30px; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
-        textarea { resize: vertical; height: 80px; }
+        label { font-size: 0.72em; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        input, select, textarea { padding: 11px 14px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-input); font-size: 0.9em; color: var(--text-light); appearance: none; -webkit-appearance: none; }
+        select { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M0 3l5 5 5-5z' fill='%2394a3b8'/></svg>"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 34px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary-industrial); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+        textarea { resize: vertical; height: 90px; }
         
-        .btn-main { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 700; font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: background 0.2s; width: 100%; margin-top: 10px; }
+        .btn-main { background: var(--primary-industrial); color: white; border: none; padding: 14px; border-radius: 4px; font-weight: 700; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.8px; cursor: pointer; transition: background 0.2s; width: 100%; margin-top: 10px; }
         .btn-main:hover { background: #2563eb; }
 
-        /* --- FILTROS DE TABLA --- */
-        .table-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; }
+        /* --- FILTROS DE DATOS --- */
+        .table-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 18px; background: #162238; border-bottom: 1px solid var(--border-color); }
         @media (min-width: 768px) { .table-filters { grid-template-columns: repeat(4, 1fr); } }
-        .filter-group { display: flex; flex-direction: column; }
 
-        /* --- TARJETAS MÓVILES VS TABLA PC --- */
+        /* --- RESPONSIVE DATA TABLE --- */
         .table-container { overflow-x: auto; display: none; }
-        .mobile-list { display: block; padding: 10px; }
+        .mobile-list { display: block; padding: 12px; }
 
         @media (min-width: 992px) {
             .table-container { display: block; }
             .mobile-list { display: none; }
         }
 
-        /* Diseño Computadora (Tabla) */
         table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
-        th { background: #f8fafc; color: var(--text-muted); font-weight: 700; text-transform: uppercase; padding: 12px 15px; border-bottom: 1px solid #e2e8f0; text-align: left; }
-        td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; }
-        tr:hover td { background: #f8fafc; }
+        th { background: #1a263e; color: var(--text-muted); font-weight: 700; text-transform: uppercase; padding: 14px 16px; border-bottom: 1px solid var(--border-color); text-align: left; letter-spacing: 0.5px; }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); color: #e2e8f0; }
+        tr:hover td { background: #17233a; }
 
-        /* Diseño Celular */
-        .mobile-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .m-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-        .m-card-id { font-weight: 700; color: var(--primary); }
-        .m-card-area { font-weight: 700; font-size: 0.95em; margin-bottom: 5px; }
-        .m-card-desc { font-size: 0.85em; color: #475569; margin-bottom: 10px; line-height: 1.4; }
-        .m-card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; color: var(--text-muted); border-top: 1px solid #f1f5f9; padding-top: 8px; margin-top: 5px; }
+        /* Diseño de Tarjetas de Activo (Móvil) */
+        .mobile-card { background: #162238; border: 1px solid var(--border-color); border-radius: 6px; padding: 16px; margin-bottom: 14px; }
+        .m-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .m-card-id { font-weight: 700; color: var(--primary-industrial); font-family: monospace; }
+        .m-card-area { font-weight: 700; font-size: 1em; color: var(--text-light); }
+        .m-card-desc { font-size: 0.88em; color: #cbd5e1; margin-bottom: 12px; line-height: 1.4; }
+        .m-card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 10px; }
 
-        /* Badges */
-        .badge { padding: 4px 8px; border-radius: 20px; font-weight: 700; color: white; font-size: 0.7em; text-transform: uppercase; display: inline-block; text-align: center; }
-        .status-proceso { background: var(--status-proceso); }
-        .status-programado { background: var(--status-prog); }
-        .status-concluido { background: var(--status-concluido); }
-        .status-pendiente { background: var(--prio-baja); }
-        .prio-alta { background: var(--prio-alta); }
-        .prio-media { background: var(--prio-media); color: #78350f; }
-        .prio-baja { background: var(--prio-baja); }
+        /* Badges de Confiabilidad */
+        .badge { padding: 5px 10px; border-radius: 4px; font-weight: 700; color: white; font-size: 0.7em; text-transform: uppercase; display: inline-block; letter-spacing: 0.3px; }
+        .status-pendiente { background: #475569; }
+        .status-programado { background: #8b5cf6; }
+        .status-en-proceso { background: var(--status-ejecucion); }
+        .status-concluido { background: var(--prio-rutinaria); }
+        
+        .prio-alta { background: var(--prio-critica); }
+        .prio-media { background: var(--prio-importante); color: #1e1b4b; }
+        .prio-baja { background: #334155; }
 
-        .action-btn { background: #f1f5f9; border: none; cursor: pointer; font-size: 1em; padding: 6px 10px; border-radius: 4px; margin-right: 5px; }
-        .action-btn:hover { background: #e2e8f0; }
+        .action-btn { background: #1e293b; border: 1px solid var(--border-color); color: white; cursor: pointer; font-size: 0.9em; padding: 6px 12px; border-radius: 4px; }
+        .action-btn:hover { background: var(--border-color); }
 
-        #loading-overlay { display: none; position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 0.85em; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; }
+        #loading-overlay { display: none; position: fixed; top: 20px; right: 20px; background: var(--prio-rutinaria); color: #0b0f19; padding: 10px 20px; border-radius: 4px; font-weight: 800; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.5px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
 
-<div id="loading-overlay">⏳ Sincronizando con Excel...</div>
+<div id="loading-overlay">⚙️ Datos Sincronizados En Línea</div>
 
+<!-- HEADER INDUSTRIAL -->
 <header>
     <div class="logo-section">
-        <span style="font-size: 1.5em;">🏢</span>
+        <span style="font-size: 1.6em; color: var(--primary-industrial);">🏭</span>
         <div class="logo-text">
             <h1>Terminales de Cargas Especializadas</h1>
-            <p>Deficiency Management System • Control Operativo</p>
+            <p>Asset Reliability & Maintenance Control (RCM System)</p>
         </div>
     </div>
     <div class="header-date" id="current-date-display">--/--/----</div>
 </header>
 
+<!-- MENÚ SOLICITADO -->
 <nav class="nav-menu">
     <div class="nav-btn active" onclick="switchSection('sec-registro', this)">
         <span>📝</span>Registrar Pendientes
@@ -145,10 +147,11 @@
 
 <div class="container">
 
+    <!-- ================= PANTALLA 1: REGISTRAR PENDIENTES ================= -->
     <section id="sec-registro" class="app-section active">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title" id="form-action-title">Nueva Deficiencia de Planta</h3>
+                <h3 class="card-title" id="form-action-title">Apertura de Reporte Técnico / Modo de Falla</h3>
             </div>
             <div class="card-body">
                 <form id="deficiency-form">
@@ -156,96 +159,99 @@
                     
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="fecha_inicio">Fecha Reporte</label>
+                            <label for="fecha_inicio">Fecha de Detección</label>
                             <input type="date" id="fecha_inicio" required readonly>
                         </div>
                         <div class="form-group">
-                            <label for="localizacion">Localización / Área *</label>
+                            <label for="localizacion">Contexto Operacional (Activo / Área) *</label>
                             <select id="localizacion" required>
-                                <option value="" disabled selected>Seleccione área...</option>
-                                <option value="BODEGA">BODEGA</option>
-                                <option value="MUELLE 5">MUELLE 5</option>
-                                <option value="BATERIA SILOS 1">BATERIA SILOS 1</option>
-                                <option value="BATERIA SILOS 2">BATERIA SILOS 2</option>
-                                <option value="ANDENES">ANDENES</option>
-                                <option value="VIAS FERROVIARIAS">VIAS FERROVIARIAS</option>
-                                <option value="BRIGGS">BRIGGS</option>
+                                <option value="" disabled selected>Seleccione el activo corporativo...</option>
+                                <option value="BODEGA">BODEGA DE ALMACENAMIENTO</option>
+                                <option value="MUELLE 5">MUELLE OPERATIVO 5</option>
+                                <option value="BATERIA SILOS 1">BATERÍA DE SILOS 1</option>
+                                <option value="BATERIA SILOS 2">BATERÍA DE SILOS 2</option>
+                                <option value="ANDENES">ANDENES DE CARGA / DESCARGA</option>
+                                <option value="VIAS FERROVIARIAS">VÍAS FERROVIARIAS INTERNAS</option>
+                                <option value="BRIGGS">SISTEMA DE BOMBEO BRIGGS</option>
                             </select>
                         </div>
                         <div class="form-group full-width">
-                            <label for="descripcion">Descripción de la Actividad *</label>
-                            <textarea id="descripcion" placeholder="Describa el problema detalladamente..." required></textarea>
+                            <label for="descripcion">Modo de Falla detectado / Descripción del Síntoma *</label>
+                            <textarea id="descripcion" placeholder="Describa de manera técnica la desviación o síntoma del activo..." required></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="tipo_actividad">Tipo de Actividad</label>
+                            <label for="tipo_actividad">Estrategia de Mantenimiento</label>
                             <select id="tipo_actividad">
-                                <option value="Correctivo">Correctivo</option>
-                                <option value="Preventivo">Preventivo</option>
-                                <option value="Predictivo">Predictivo</option>
-                                <option value="Seguridad">Seguridad</option>
-                                <option value="Mejora">Mejora</option>
+                                <option value="Correctivo">Mantenimiento Correctivo (Reactivo)</option>
+                                <option value="Preventivo">Mantenimiento Preventivo (Planificado)</option>
+                                <option value="Predictivo">Mantenimiento basado en Condición (CBM)</option>
+                                <option value="Seguridad">Mitigación de Riesgos / HSE</option>
+                                <option value="Mejora">Rediseño / Proyecto de Mejora</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="prioridad">Prioridad</label>
+                            <label for="prioridad">Grado de Criticidad (Matriz RCM)</label>
                             <select id="prioridad">
-                                <option value="Alta">Alta</option>
-                                <option value="Media" selected>Media</option>
-                                <option value="Baja">Baja</option>
+                                <option value="Alta">Alta (Paro de Proceso / Riesgo HSE)</option>
+                                <option value="Media" selected>Media (Degradación de Función / Alerta)</option>
+                                <option value="Baja">Baja (Defecto Menor / Tolerable)</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="status">Status Inicial</label>
+                            <label for="status">Estado del Reporte</label>
                             <select id="status">
-                                <option value="Pendiente">Pendiente</option>
-                                <option value="Programado">Programado</option>
-                                <option value="En Proceso">En Proceso</option>
-                                <option value="Concluido">Concluido</option>
+                                <option value="Pendiente">Pendiente (Backlog)</option>
+                                <option value="Programado">Programado (Planificación)</option>
+                                <option value="En Proceso">En Ejecución (Taller/Campo)</option>
+                                <option value="Concluido">Cerrado / Concluido</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="ot">Orden de Trabajo (O.T.)</label>
-                            <input type="text" id="ot" placeholder="Ej. OT-204">
+                            <label for="ot">Orden de Trabajo Asociada (O.T.)</label>
+                            <input type="text" id="ot" placeholder="Cargar código interno O.T.">
                         </div>
                         <div class="form-group">
-                            <label for="fecha_prog">Fecha Programación</label>
+                            <label for="fecha_prog">Fecha Programada de Intervención</label>
                             <input type="date" id="fecha_prog">
                         </div>
                         <div class="form-group">
-                            <label for="fecha_term">Fecha Término</label>
+                            <label for="fecha_term">Fecha de Cierre (Término)</label>
                             <input type="date" id="fecha_term">
                         </div>
                         <div class="form-group full-width">
-                            <label for="responsable">Responsable Asignado</label>
-                            <input type="text" id="responsable" placeholder="Nombre del técnico u operador">
+                            <label for="responsable">Especialista / Técnico Asignado</label>
+                            <input type="text" id="responsable" placeholder="Personal técnico o supervisor responsable de la liberación">
                         </div>
                         <div class="form-group full-width">
-                            <label for="comentarios">Comentarios de Avance</label>
-                            <textarea id="comentarios" placeholder="Notas adicionales..."></textarea>
+                            <label for="comentarios">Minuta Técnica de Avance</label>
+                            <textarea id="comentarios" placeholder="Historial de refacciones, acciones tomadas o justificaciones técnicas..."></textarea>
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn-main" id="btn-submit">Guardar en Excel</button>
-                    <button type="button" class="btn-main" id="btn-cancel" style="display:none; background:#64748b; margin-top:5px;">Cancelar Modificación</button>
+                    <button type="submit" class="btn-main" id="btn-submit">Sincronizar con Registro Central (Excel)</button>
+                    <button type="button" class="btn-main" id="btn-cancel" style="display:none; background:#475569; margin-top:5px;">Abortar Edición</button>
                 </form>
             </div>
         </div>
     </section>
 
+    <!-- ================= PANTALLA 2: VER LISTA DE PENDIENTES ================= -->
     <section id="sec-pendientes" class="app-section">
+        <!-- CUADRO DE MANDO KPIs DE CONFIABILIDAD -->
         <div class="kpi-container">
-            <div class="kpi-card"><div class="kpi-title">Pendientes</div><div class="kpi-value" id="kpi-pending">0</div></div>
-            <div class="kpi-card"><div class="kpi-title">Prioridad Alta</div><div class="kpi-value urgent" id="kpi-urgent">0</div></div>
-            <div class="kpi-card"><div class="kpi-title">En Proceso</div><div class="kpi-value" style="color:var(--status-proceso);" id="kpi-process">0</div></div>
-            <div class="kpi-card"><div class="kpi-title">Concluidos</div><div class="kpi-value" style="color:var(--status-concluido);" id="kpi-completed">0</div></div>
+            <div class="kpi-card kpi-backlog"><div class="kpi-title">Backlog (OT Activas)</div><div class="kpi-value" id="kpi-pending">0</div></div>
+            <div class="kpi-card kpi-critico"><div class="kpi-title">Criticidad Alta Activa</div><div class="kpi-value" id="kpi-urgent" style="color: var(--prio-critica)">0</div></div>
+            <div class="kpi-card kpi-proactivo"><div class="kpi-title">% Mtto. Proactivo</div><div class="kpi-value" id="kpi-proactiveness" style="color: #60a5fa">0%</div></div>
+            <div class="kpi-card kpi-tasa"><div class="kpi-title">Tasa de Cierre Global</div><div class="kpi-value" id="kpi-rate" style="color: #34d399">0%</div></div>
         </div>
 
+        <!-- FILTROS INDUSTRIALES -->
         <div class="card">
             <div class="table-filters">
                 <div class="filter-group">
-                    <label>Área</label>
+                    <label>Filtrar por Activo</label>
                     <select id="filter-area">
-                        <option value="Todos">Todas</option>
+                        <option value="Todos">Todos los activos</option>
                         <option value="BODEGA">BODEGA</option>
                         <option value="MUELLE 5">MUELLE 5</option>
                         <option value="BATERIA SILOS 1">BATERIA SILOS 1</option>
@@ -256,9 +262,9 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Status</label>
+                    <label>Filtrar por Estado</label>
                     <select id="filter-status">
-                        <option value="Todos">Todos</option>
+                        <option value="Todos">Todos los estados</option>
                         <option value="Pendiente">Pendiente</option>
                         <option value="Programado">Programado</option>
                         <option value="En Proceso">En Proceso</option>
@@ -266,39 +272,41 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Prioridad</label>
+                    <label>Grado Criticidad</label>
                     <select id="filter-prioridad">
-                        <option value="Todos">Todas</option>
+                        <option value="Todos">Todas las criticidades</option>
                         <option value="Alta">Alta</option>
                         <option value="Media">Media</option>
                         <option value="Baja">Baja</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Buscar O.T.</label>
-                    <input type="text" id="search-ot" placeholder="Escribe O.T...">
+                    <label>Filtro por Código O.T.</label>
+                    <input type="text" id="search-ot" placeholder="Buscar correlativo...">
                 </div>
             </div>
 
+            <!-- TABLA COMPUTADORA ESCRITORIO -->
             <div class="table-container">
                 <table id="tasks-table">
                     <thead>
                         <tr>
-                            <th>ITEM</th>
-                            <th>STATUS</th>
-                            <th>PRIORIDAD</th>
-                            <th>ÁREA</th>
-                            <th>DESCRIPCIÓN</th>
+                            <th>CÓDIGO ID</th>
+                            <th>ESTADO</th>
+                            <th>CRITICIDAD</th>
+                            <th>CONTEXTO OPERACIONAL (ACTIVO)</th>
+                            <th>MODO DE FALLA / SÍNTOMA</th>
                             <th>O.T.</th>
-                            <th>RESPONSABLE</th>
-                            <th>FECHAS</th>
-                            <th>ACCIONES</th>
+                            <th>ESPECIALISTA ASIGNADO</th>
+                            <th>CRONOLOGÍA</th>
+                            <th>ACCION</th>
                         </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
                 </table>
             </div>
 
+            <!-- TARJETAS MÓVILES CAMPO -->
             <div id="mobile-list-container" class="mobile-list"></div>
         </div>
     </section>
@@ -306,9 +314,9 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysKRjp80r8g9n_oMFFFYDYFQzNZd5b5uOmH-05n7AX6efX9eQegAylL4yoJVi1s0_J_Q/exec"; // Pega aquí tu URL de Google Apps Script
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbze9na6e6-gEbDwgL4gGVGUnU8Jw8SJiYxI8kcbS71GgZAR8hQBA55SwafkaDOFrYSAKw/exec"; // Pegar el enlace web generado por Google Apps Script
 
-    let tasks = JSON.parse(localStorage.getItem('plant_deficiencies_v4')) || [];
+    let tasks = JSON.parse(localStorage.getItem('plant_deficiencies_v5')) || [];
     const form = document.getElementById('deficiency-form');
     
     const hoy = new Date();
@@ -350,15 +358,12 @@
             if(SCRIPT_URL) sintonizarConNube('UPDATE', taskData, editIndex);
         }
 
-        // LIMPIEZA AUTOMÁTICA COMPLETADA
         resetFormulario();
-        
-        localStorage.setItem('plant_deficiencies_v4', JSON.stringify(tasks));
+        localStorage.setItem('plant_deficiencies_v5', JSON.stringify(tasks));
         renderVistas();
         
         setTimeout(() => {
             mostrarCarga(false);
-            // Redirige automáticamente al usuario a la lista de pendientes al guardar
             switchSection('sec-pendientes', document.querySelectorAll('.nav-menu .nav-btn')[1]);
         }, 800);
     });
@@ -366,8 +371,8 @@
     function resetFormulario() {
         form.reset();
         document.getElementById('edit-index').value = "";
-        document.getElementById('form-action-title').innerText = "Nueva Deficiencia de Planta";
-        document.getElementById('btn-submit').innerText = "Guardar en Excel";
+        document.getElementById('form-action-title').innerText = "Apertura de Reporte Técnico / Modo de Falla";
+        document.getElementById('btn-submit').innerText = "Sincronizar con Registro Central (Excel)";
         document.getElementById('btn-cancel').style.display = "none";
         document.getElementById('fecha_inicio').valueAsDate = new Date();
     }
@@ -384,10 +389,17 @@
         const selPrio = document.getElementById('filter-prioridad').value;
         const sOt = document.getElementById('search-ot').value.toLowerCase();
 
-        document.getElementById('kpi-pending').innerText = tasks.filter(t => t.status === 'Pendiente').length;
-        document.getElementById('kpi-urgent').innerText = tasks.filter(t => t.prioridad === 'Alta' && t.status !== 'Concluido').length;
-        document.getElementById('kpi-process').innerText = tasks.filter(t => t.status === 'En Proceso').length;
-        document.getElementById('kpi-completed').innerText = tasks.filter(t => t.status === 'Concluido').length;
+        // Algoritmos de Métricas RCM e Indicadores Clave de Desempeño
+        const total = tasks.length;
+        const backlog = tasks.filter(t => t.status !== 'Concluido').length;
+        const criticas = tasks.filter(t => t.prioridad === 'Alta' && t.status !== 'Concluido').length;
+        const proactivas = tasks.filter(t => t.tipo_actividad === 'Preventivo' || t.tipo_actividad === 'Predictivo').length;
+        const concluidas = tasks.filter(t => t.status === 'Concluido').length;
+
+        document.getElementById('kpi-pending').innerText = backlog;
+        document.getElementById('kpi-urgent').innerText = criticas;
+        document.getElementById('kpi-proactiveness').innerText = total > 0 ? Math.round((proactivas / total) * 100) + '%' : '0%';
+        document.getElementById('kpi-rate').innerText = total > 0 ? Math.round((concluidas / total) * 100) + '%' : '0%';
 
         tasks.forEach((task, index) => {
             if ((selArea !== 'Todos' && task.localizacion !== selArea) ||
@@ -401,46 +413,46 @@
             const statusClass = `badge status-${task.status.toLowerCase().replace(" ", "-")}`;
             const prioClass = `badge prio-${task.prioridad.toLowerCase()}`;
 
-            // PC Row
+            // Fila de Datos Corporativa (PC)
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><strong>#${itemNum}</strong></td>
+                <td><strong style="font-family:monospace; color:#60a5fa;">ID-${itemNum}</strong></td>
                 <td><span class="${statusClass}">${task.status}</span></td>
                 <td><span class="${prioClass}">${task.prioridad}</span></td>
-                <td style="font-weight:700;">${task.localizacion}</td>
-                <td style="max-width:300px;">${task.descripcion}</td>
-                <td><mark style="background:#cbd5e1; padding:2px 6px; border-radius:4px;">${task.ot}</mark></td>
-                <td style="font-weight:600; color:var(--primary);">${task.responsable}</td>
-                <td style="font-size:0.85em; color:var(--text-muted);">
-                    Ini: ${formatDate(task.fecha_inicio)}<br>Prog: ${formatDate(task.fecha_prog)}
+                <td style="font-weight:700; color:#cbd5e1;">${task.localizacion}</td>
+                <td style="max-width:320px; font-size:0.93em; color:#94a3b8;">${task.descripcion}</td>
+                <td><span style="background:#1e293b; padding:4px 8px; border-radius:4px; font-family:monospace; border:1px solid #475569;">${task.ot}</span></td>
+                <td style="font-weight:600; color:#f8fafc;">${task.responsable}</td>
+                <td style="font-size:0.82em; color:var(--text-muted); line-height:1.4;">
+                    Origen: ${formatDate(task.fecha_inicio)}<br>Plan: ${formatDate(task.fecha_prog)}
                 </td>
                 <td>
-                    <button class="action-btn" onclick="editTask(${index})">📝</button>
+                    <button class="action-btn" onclick="editTask(${index})">⚙️ Gestionar</button>
                 </td>
             `;
             tBody.appendChild(tr);
 
-            // Móvil Card
+            // Tarjeta Ergonómica Campo (Móvil)
             const mCard = document.createElement('div');
             mCard.className = 'mobile-card';
             mCard.innerHTML = `
                 <div class="m-card-header">
                     <div>
                         <div class="m-card-area">${task.localizacion}</div>
-                        <span class="m-card-id">#${itemNum}</span>
+                        <span class="m-card-id">ID-${itemNum}</span>
                     </div>
-                    <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
+                    <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
                         <span class="${statusClass}">${task.status}</span>
                         <span class="${prioClass}">${task.prioridad}</span>
                     </div>
                 </div>
                 <div class="m-card-desc">${task.descripcion}</div>
-                <div style="font-size:0.8em; margin-bottom:8px;">
-                    <strong>Resp:</strong> ${task.responsable} | <strong>O.T:</strong> ${task.ot}
+                <div style="font-size:0.8em; margin-bottom:10px; color:#94a3b8;">
+                    <strong>Especialista:</strong> ${task.responsable} <br><strong>Orden de Trabajo:</strong> ${task.ot}
                 </div>
                 <div class="m-card-footer">
-                    <span>Programado: ${formatDate(task.fecha_prog)}</span>
-                    <button class="action-btn" style="padding:4px 10px; font-size:0.9em;" onclick="editTask(${index})">📝 Editar</button>
+                    <span>Planificado: ${formatDate(task.fecha_prog)}</span>
+                    <button class="action-btn" style="padding:5px 12px; font-size:0.82em; font-weight:700;" onclick="editTask(${index})">⚙️ Actualizar</button>
                 </div>
             `;
             mContainer.appendChild(mCard);
@@ -469,8 +481,8 @@
         document.getElementById('responsable').value = task.responsable === '-' ? '' : task.responsable;
         document.getElementById('comentarios').value = task.comentarios === '-' ? '' : task.comentarios;
 
-        document.getElementById('form-action-title').innerText = `Modificando ITEM #${1001 + index}`;
-        document.getElementById('btn-submit').innerText = "Actualizar Cambios";
+        document.getElementById('form-action-title').innerText = `Gestión de Evento / ID-${1001 + index}`;
+        document.getElementById('btn-submit').innerText = "Actualizar Registro en Nube";
         document.getElementById('btn-cancel').style.display = "block";
         
         switchSection('sec-registro', document.querySelectorAll('.nav-menu .nav-btn')[0]);
@@ -489,7 +501,7 @@
             .then(res => res.json())
             .then(data => {
                 tasks = data;
-                localStorage.setItem('plant_deficiencies_v4', JSON.stringify(tasks));
+                localStorage.setItem('plant_deficiencies_v5', JSON.stringify(tasks));
                 renderVistas();
                 mostrarCarga(false);
             }).catch(() => mostrarCarga(false));
