@@ -99,7 +99,7 @@
         .mobile-card { background: #162238; border: 1px solid var(--border-color); border-radius: 6px; padding: 16px; margin-bottom: 14px; }
         .m-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
         .m-card-id { font-weight: 700; color: var(--primary); font-family: monospace; }
-        .m-card-area { font-weight: 700; font-size: 1em; color: var(--text-light); }
+        .m-card-area { font-weight: 700; font-size: 1em; color: var(--text-light); text-transform: uppercase; }
         .m-card-desc { font-size: 0.88em; color: #cbd5e1; margin-bottom: 12px; line-height: 1.4; }
         .m-card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 10px; }
 
@@ -124,7 +124,6 @@
 
 <div id="loading-overlay">⚙️ Datos Sincronizados En Línea</div>
 
-<!-- HEADER GENERAL -->
 <header>
     <div class="logo-section">
         <span style="font-size: 1.6em; color: var(--primary);">🏭</span>
@@ -136,7 +135,6 @@
     <div class="header-date" id="current-date-display">--/--/----</div>
 </header>
 
-<!-- MENÚ SOLICITADO -->
 <nav class="nav-menu">
     <div class="nav-btn active" onclick="switchSection('sec-registro', this)">
         <span>📝</span>Registrar Pendientes
@@ -148,7 +146,6 @@
 
 <div class="container">
 
-    <!-- ================= PANTALLA 1: REGISTRAR PENDIENTES ================= -->
     <section id="sec-registro" class="app-section active">
         <div class="card">
             <div class="card-header">
@@ -164,17 +161,8 @@
                             <input type="date" id="fecha_inicio" required readonly>
                         </div>
                         <div class="form-group">
-                            <label for="localizacion">Área / Ubicación *</label>
-                            <select id="localizacion" required>
-                                <option value="" disabled selected>Seleccione área...</option>
-                                <option value="BODEGA">BODEGA</option>
-                                <option value="MUELLE 5">MUELLE 5</option>
-                                <option value="BATERIA SILOS 1">BATERIA SILOS 1</option>
-                                <option value="BATERIA SILOS 2">BATERIA SILOS 2</option>
-                                <option value="ANDENES">ANDENES</option>
-                                <option value="VIAS FERROVIARIAS">VIAS FERROVIARIAS</option>
-                                <option value="BRIGGS">BRIGGS</option>
-                            </select>
+                            <label for="localizacion">Área / Ubicación * (Campo Abierto)</label>
+                            <input type="text" id="localizacion" placeholder="Escribe el nombre del área o equipo..." required style="text-transform: uppercase;">
                         </div>
                         <div class="form-group full-width">
                             <label for="descripcion">Descripción del Pendiente / Trabajo Requerido *</label>
@@ -236,9 +224,7 @@
         </div>
     </section>
 
-    <!-- ================= PANTALLA 2: VER LISTA DE PENDIENTES ================= -->
     <section id="sec-pendientes" class="app-section">
-        <!-- CONTADORES Y KPIs DE TRABAJO -->
         <div class="kpi-container">
             <div class="kpi-card kpi-backlog"><div class="kpi-title">Pendientes Activos</div><div class="kpi-value" id="kpi-pending">0</div></div>
             <div class="kpi-card kpi-critico"><div class="kpi-title">Urgencias (Prioridad Alta)</div><div class="kpi-value" id="kpi-urgent" style="color: var(--prio-alta)">0</div></div>
@@ -246,21 +232,11 @@
             <div class="kpi-card kpi-tasa"><div class="kpi-title">Eficiencia de Cierre</div><div class="kpi-value" id="kpi-rate" style="color: #34d399">0%</div></div>
         </div>
 
-        <!-- FILTROS DE BÚSQUEDA -->
         <div class="card">
             <div class="table-filters">
                 <div class="filter-group">
-                    <label>Filtrar por Área</label>
-                    <select id="filter-area">
-                        <option value="Todos">Todas las áreas</option>
-                        <option value="BODEGA">BODEGA</option>
-                        <option value="MUELLE 5">MUELLE 5</option>
-                        <option value="BATERIA SILOS 1">BATERIA SILOS 1</option>
-                        <option value="BATERIA SILOS 2">BATERIA SILOS 2</option>
-                        <option value="ANDENES">ANDENES</option>
-                        <option value="VIAS FERROVIARIAS">VIAS FERROVIARIAS</option>
-                        <option value="BRIGGS">BRIGGS</option>
-                    </select>
+                    <label>Buscar por Área / Ubicación</label>
+                    <input type="text" id="filter-area" placeholder="Escribe el área a filtrar...">
                 </div>
                 <div class="filter-group">
                     <label>Filtrar por Estado</label>
@@ -287,7 +263,6 @@
                 </div>
             </div>
 
-            <!-- VISTA COMPUTADORA (TABLA) -->
             <div class="table-container">
                 <table id="tasks-table">
                     <thead>
@@ -295,7 +270,7 @@
                             <th>ID</th>
                             <th>ESTADO</th>
                             <th>PRIORIDAD</th>
-                            <th>ÁREA</th>
+                            <th>ÁREA / UBICACIÓN</th>
                             <th>DESCRIPCIÓN DEL PENDIENTE</th>
                             <th>O.T.</th>
                             <th>RESPONSABLE</th>
@@ -307,7 +282,6 @@
                 </table>
             </div>
 
-            <!-- VISTA CELULAR (TARJETAS) -->
             <div id="mobile-list-container" class="mobile-list"></div>
         </div>
     </section>
@@ -315,9 +289,9 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzW0tM2MKEXEFSj_Jy4x5NBa323p2OGYdbryatbtXgeJI5Gm3HPwrx9VqpuxBC9_CUXkg/exec"; // Pega aquí tu enlace web generado por Google Apps Script
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznSpUy1cWE8hsXRWJRebNAmiA2NoDkhs9dqw33Iiz-d3apqUyHvGBJeonrio0zx_tI8A/exec"; // Pega aquí tu enlace web generado por Google Apps Script
 
-    let tasks = JSON.parse(localStorage.getItem('plant_deficiencies_v6')) || [];
+    let tasks = JSON.parse(localStorage.getItem('plant_deficiencies_v7')) || [];
     const form = document.getElementById('deficiency-form');
     
     const hoy = new Date();
@@ -339,7 +313,7 @@
         const editIndex = document.getElementById('edit-index').value;
         const taskData = {
             fecha_inicio: document.getElementById('fecha_inicio').value,
-            localizacion: document.getElementById('localizacion').value,
+            localizacion: document.getElementById('localizacion').value.trim().toUpperCase(),
             descripcion: document.getElementById('descripcion').value,
             tipo_actividad: document.getElementById('tipo_actividad').value,
             prioridad: document.getElementById('prioridad').value,
@@ -360,7 +334,7 @@
         }
 
         resetFormulario();
-        localStorage.setItem('plant_deficiencies_v6', JSON.stringify(tasks));
+        localStorage.setItem('plant_deficiencies_v7', JSON.stringify(tasks));
         renderVistas();
         
         setTimeout(() => {
@@ -385,7 +359,7 @@
         tBody.innerHTML = '';
         mContainer.innerHTML = '';
 
-        const selArea = document.getElementById('filter-area').value;
+        const txtArea = document.getElementById('filter-area').value.toLowerCase().trim();
         const selStatus = document.getElementById('filter-status').value;
         const selPrio = document.getElementById('filter-prioridad').value;
         const sOt = document.getElementById('search-ot').value.toLowerCase();
@@ -403,7 +377,7 @@
         document.getElementById('kpi-rate').innerText = total > 0 ? Math.round((concluidas / total) * 100) + '%' : '0%';
 
         tasks.forEach((task, index) => {
-            if ((selArea !== 'Todos' && task.localizacion !== selArea) ||
+            if ((txtArea && !task.localizacion.toLowerCase().includes(txtArea)) ||
                 (selStatus !== 'Todos' && task.status !== selStatus) ||
                 (selPrio !== 'Todos' && task.prioridad !== selPrio) ||
                 (sOt && !task.ot.toLowerCase().includes(sOt))) {
@@ -420,7 +394,7 @@
                 <td><strong style="font-family:monospace; color:#60a5fa;">#${itemNum}</strong></td>
                 <td><span class="${statusClass}">${task.status}</span></td>
                 <td><span class="${prioClass}">${task.prioridad}</span></td>
-                <td style="font-weight:700; color:#cbd5e1;">${task.localizacion}</td>
+                <td style="font-weight:700; color:#cbd5e1; text-transform:uppercase;">${task.localizacion}</td>
                 <td style="max-width:320px; font-size:0.93em; color:#94a3b8;">${task.descripcion}</td>
                 <td><span style="background:#1e293b; padding:4px 8px; border-radius:4px; font-family:monospace; border:1px solid #475569;">${task.ot}</span></td>
                 <td style="font-weight:600; color:#f8fafc;">${task.responsable}</td>
@@ -502,7 +476,7 @@
             .then(res => res.json())
             .then(data => {
                 tasks = data;
-                localStorage.setItem('plant_deficiencies_v6', JSON.stringify(tasks));
+                localStorage.setItem('plant_deficiencies_v7', JSON.stringify(tasks));
                 renderVistas();
                 mostrarCarga(false);
             }).catch(() => mostrarCarga(false));
@@ -517,7 +491,8 @@
         });
     }
 
-    ['filter-area', 'filter-status', 'filter-prioridad'].forEach(id => document.getElementById(id).addEventListener('change', renderVistas));
+    document.getElementById('filter-area').addEventListener('input', renderVistas);
+    ['filter-status', 'filter-prioridad'].forEach(id => document.getElementById(id).addEventListener('change', renderVistas));
     document.getElementById('search-ot').addEventListener('input', renderVistas);
 
     renderVistas();
