@@ -120,8 +120,10 @@
         .progress-bar-fill.done { background: var(--status-concluido); }
         .progress-text { font-size: 0.82em; font-weight: 700; color: #e2e8f0; display: inline-block; margin-top: 2px; }
 
-        .action-btn { background: #1e293b; border: 1px solid var(--border-color); color: white; cursor: pointer; font-size: 0.9em; padding: 6px 12px; border-radius: 4px; }
+        .action-btn { background: #1e293b; border: 1px solid var(--border-color); color: white; cursor: pointer; font-size: 0.9em; padding: 6px 12px; border-radius: 4px; font-weight: 600; }
         .action-btn:hover { background: var(--border-color); }
+        .btn-delete { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #f87171; }
+        .btn-delete:hover { background: #ef4444; color: white; }
 
         #loading-overlay { display: none; position: fixed; top: 20px; right: 20px; background: var(--status-concluido); color: #0b0f19; padding: 10px 20px; border-radius: 4px; font-weight: 800; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.5px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
     </style>
@@ -130,7 +132,6 @@
 
 <div id="loading-overlay">⚙️ Datos Sincronizados En Línea</div>
 
-<!-- HEADER GENERAL -->
 <header>
     <div class="logo-section">
         <span style="font-size: 1.6em; color: var(--primary);">🏭</span>
@@ -142,7 +143,6 @@
     <div class="header-date" id="current-date-display">--/--/----</div>
 </header>
 
-<!-- MENÚ -->
 <nav class="nav-menu">
     <div class="nav-btn active" onclick="switchSection('sec-registro', this)">
         <span>📝</span>Registrar Pendientes
@@ -154,7 +154,6 @@
 
 <div class="container">
 
-    <!-- ================= PANTALLA 1: REGISTRAR PENDIENTES ================= -->
     <section id="sec-registro" class="app-section active">
         <div class="card">
             <div class="card-header">
@@ -249,7 +248,6 @@
         </div>
     </section>
 
-    <!-- ================= PANTALLA 2: VER LISTA DE PENDIENTES ================= -->
     <section id="sec-pendientes" class="app-section">
         <div class="kpi-container">
             <div class="kpi-card kpi-backlog"><div class="kpi-title">Pendientes Activos</div><div class="kpi-value" id="kpi-pending">0</div></div>
@@ -258,7 +256,6 @@
             <div class="kpi-card kpi-tasa"><div class="kpi-title">Eficiencia de Cierre</div><div class="kpi-value" id="kpi-rate" style="color: #34d399">0%</div></div>
         </div>
 
-        <!-- FILTROS -->
         <div class="card">
             <div class="table-filters">
                 <div class="filter-group">
@@ -290,7 +287,6 @@
                 </div>
             </div>
 
-            <!-- TABLA PC -->
             <div class="table-container">
                 <table id="tasks-table">
                     <thead>
@@ -303,14 +299,13 @@
                             <th>O.T.</th>
                             <th>RESPONSABLE</th>
                             <th>FECHAS</th>
-                            <th>ACCION</th>
+                            <th>ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
                 </table>
             </div>
 
-            <!-- TARJETAS MOVIL -->
             <div id="mobile-list-container" class="mobile-list"></div>
         </div>
     </section>
@@ -321,7 +316,7 @@
     // ==========================================
     // PON TU ENLACE DE GOOGLE APPS SCRIPT AQUÍ:
     // ==========================================
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSLNt1JRrjt5ov-3FLSJOnUpfj3ZUsIjZGZVGvNCyIiI8qypu7Bz-4ymbV_Xb17tjnBA/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLbeERoHrmTWodJTW7qGpGnvBlycSRuIhGDZSKZjmebOR15v4BMEQo5A01MtQDfVLUBw/exec"; 
 
     let tasks = JSON.parse(localStorage.getItem('plant_deficiencies_v8')) || [];
     const form = document.getElementById('deficiency-form');
@@ -455,7 +450,10 @@
                     Reporte: ${formatDate(task.fecha_inicio)}<br>Atención: ${formatDate(task.fecha_prog)}
                 </td>
                 <td>
-                    <button class="action-btn" onclick="editTask(${index})">📝 Editar</button>
+                    <div style="display:flex; flex-direction:column; gap:4px;">
+                        <button class="action-btn" onclick="editTask(${index})">📝 Editar</button>
+                        <button class="action-btn btn-delete" onclick="deleteTask(${index})">🗑️ Borrar</button>
+                    </div>
                 </td>
             `;
             tBody.appendChild(tr);
@@ -489,7 +487,10 @@
                 </div>
                 <div class="m-card-footer">
                     <span>Programado: ${formatDate(task.fecha_prog)}</span>
-                    <button class="action-btn" style="padding:5px 12px; font-size:0.82em; font-weight:700;" onclick="editTask(${index})">📝 Actualizar</button>
+                    <div style="display:flex; gap:6px;">
+                        <button class="action-btn btn-delete" style="padding:5px 10px; font-size:0.82em;" onclick="deleteTask(${index})">🗑️</button>
+                        <button class="action-btn" style="padding:5px 12px; font-size:0.82em; font-weight:700;" onclick="editTask(${index})">📝 Actualizar</button>
+                    </div>
                 </div>
             `;
             mContainer.appendChild(mCard);
@@ -503,7 +504,6 @@
         return `${parts[2]}/${parts[1]}/${parts[0].slice(-2)}`;
     }
 
-    // --- FUNCIÓN CORREGIDA PARA PREVENIR BORRADO DE FECHA ---
     window.editTask = function(index) {
         const task = tasks[index];
         document.getElementById('edit-index').value = index;
@@ -529,6 +529,34 @@
         document.getElementById('btn-cancel').style.display = "block";
         
         switchSection('sec-registro', document.querySelectorAll('.nav-menu .nav-btn')[0]);
+    };
+
+    // --- NUEVA FUNCIÓN PARA ELIMINAR REGISTROS ---
+    window.deleteTask = function(index) {
+        const itemNum = 1001 + index;
+        if (confirm(`⚠ ¿Estás completamente seguro de que deseas eliminar permanentemente el Registro #${itemNum}? Esta acción no se puede deshacer.`)) {
+            mostrarCarga(true);
+            
+            // 1. Enviar orden de borrado a Google Sheets
+            if (SCRIPT_URL) {
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({action: 'DELETE', id: index, data: {}})
+                });
+            }
+
+            // 2. Eliminar de la memoria interna
+            tasks.splice(index, 1);
+            localStorage.setItem('plant_deficiencies_v8', JSON.stringify(tasks));
+            
+            // 3. Renderizar cambios inmediatamente
+            setTimeout(() => {
+                renderVistas();
+                mostrarCarga(false);
+            }, 600);
+        }
     };
 
     document.getElementById('btn-cancel').addEventListener('click', resetFormulario);
